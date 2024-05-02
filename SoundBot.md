@@ -7,11 +7,13 @@ Developed by Aditya Ghatge, Kabir Jain, and Yash Vardhan
 This notebook explores the design of a sound activated robot which leverages the mbed LPC1768 microcontroller and bluetooth software capabilites. The robot's commercial use case would be for individuals with disabilities preventing them from walking. By using the robot, individuals can call out for and control; it improves their quality of life. Features implemented include the ability for the robot to move towards sound on command, a manual override mode, collision prevention technology, and viewing of peripheral data on an LCD screen. The robot is fully controlled using bluetooth via the Adafruit Bluefruit app.
 
 ### Design Block Diagram
- ---- Include diagram
+ ![Picture of Diagram](https://github.com/adityaghatge/Sound-Bot/blob/main/Screenshot%202024-05-01%20194921.png?raw=true)
 
 ### Picture of Design
 
- ---- Include Picure of design
+ ![Picture of Robot](https://github.com/adityaghatge/Sound-Bot/blob/main/IMG_2621.jpg?raw=true)
+
+
 ## Components
 
 Our design made use of the following components:
@@ -27,49 +29,49 @@ Our design made use of the following components:
 - Shadow Chassis
 
 ### Pin Connection Table
-LPC1768 Pin	Component	Pin Name	Misc.
-p5	uSD File System	SPI MOSI	-
-p6	uSD File System	SPI MISO	-
-p7	uSD File System	SPI SCLK	-
-p8	uSD File System	CS	-
-VOUT	uSD File System	VCC	-
-GND	uSD File System	GND	-
-p9	uLCD Screen	RX	-
-p10	uLCD Screen	TX	-
-p11	uLCD Screen	Reset	-
--	uLCD Screen	5V	5V Supply
-GND	uLCD Screen	GND	-
-p13	Bluetooth Module	RXI	-
-p14	Bluetooth Module	TXO	-
--	Bluetooth Module	Vin	5V Supply
-GND	Bluetooth Module	CTS	-
-GND	Bluetooth Module	GND	-
-p18	Class D Amplifier	in+	-
--	Class D Amplifier	pwr+	5V Supply
-GND	Class D Amplifier	in-	-
-GND	Class D Amplifier	pwr-	-
--	Class D Amplifier	out+	Speaker +
--	Class D Amplifier	out-	Speaker -
+LPC1768 Pin	| Component	 | Pin Name	| Misc.
+| ----------- | ----------- | ----------- | ----------- |
+| p15 | Adafruit MEMS Microphone(1) | DC | - |
+| - | Adafruit MEMS Microphone(1) | Vin | 5V |
+| GND | Adafruit MEMS Microphone(1) | GND | - |
+| p16 | Adafruit MEMS Microphone(2) | DC | - |
+| - | Adafruit MEMS Microphone(2) | Vin | 5V |
+| GND | Adafruit MEMS Microphone(2) | GND | - |
+| p17 | Adafruit MEMS Microphone(3) | DC | - |
+| - | Adafruit MEMS Microphone(3) | Vin | 5V |
+| GND | Adafruit MEMS Microphone(3) | GND | - |
+| p4 | uLCD Screen | RX | - |
+| p13 | uLCD Screen | TX | - |
+| p12 | uLCD Screen | Reset | - |
+| - | uLCD Screen | 5V | 5V Supply |
+| GND | uLCD Screen | GND | - |
+| p27 | Bluetooth Module | RXI | - |
+| p28 | Bluetooth Module | TXO | - |
+| - | Bluetooth Module | Vin | 5V Supply |
+| GND | Bluetooth Module | CTS | - |
+| GND | Bluetooth Module | GND | - |
+| p9 | ROB-12629 Wheel Encoder Kit(1) | OUT | - |
+| - | ROB-12629 Wheel Encoder Kit(1) | 3V | - |
+| GND | ROB-12629 Wheel Encoder Kit(1) | GND | - |
+| p10 | ROB-12629 Wheel Encoder Kit(2) | OUT | - |
+| - | ROB-12629 Wheel Encoder Kit(2) | 3V | - |
+| GND | ROB-12629 Wheel Encoder Kit(2) | GND | - |
+| p21 | ROB-13302 Hobby Gearmotor | pwm | - |
+| p22 | ROB-13302 Hobby Gearmotor | fwd | - |
+| p23 | ROB-13302 Hobby Gearmotor | rev | - |
+| - | ROB-13302 Hobby Gearmotor | 5V Supply | 5V |
+| p6 | HC-SR04 Ultrasonic Sensor | Trig | - |
+| p7 | HC-SR04 Ultrasonic Sensor | Echo | - |
+| - | HC-SR04 Ultrasonic Sensor | 5V Supply | 5V |
+| GND | HC-SR04 Ultrasonic Sensor | GND | - |
 
------- EXPLAIN DESIGN CHOICES
 
-The Class D Amplifier amplifies the PWM signal that contains the music data. A potentiometer is used in combination with the amplifier to control the volume of the audio output. The amplifier sends the amplified music to a speaker.
+The HC-SR04 Ultrasonic Sensor detects objects at a distance and has a range between 2mm and 400mm. We used this sensor to detect objects ahead of the robot. If there was an object at 10mm away, we send a signal to stop the motors and display a warning on the LCD screen. Once stopped, a manual override is required to get it moving.
 
-amp speaker
+The Bluetooth control is accomplished using the Adafruit Bluetooth module and is controlled using the Bluefruit app. The interface we decided to use was the control pad. When '1' is pressed, it is switched into manual override mode. When in manual override mode, the D-pad can be used to control the robot directly. If there is an object in front of it, the robot will not move forward and will display a warning on the LCD screen. When '2' is pressed, it switches to sound mode. When in sound mode, it takes samples of the ambiance of its surroundings. Then upon '3' being pressed, it listens to surrounds and moves in the direction of sound.
 
-The Bluetooth control of the music player is accomplished using the Adafruit Bluetooth module shown below. Music playback is controlled as follows: the left arrow skips backward 1 song, the right arrow skips forward 1 song, the up arrow increases volume, the down arrow decreases volume, the (1) button plays the song, the (2) button pauses the song, the (3) button mutes the song, and the (4) button jumps to a random song.
+The LCD screen is used to display the mode it is in, if it is in sampling mode, the warning for a close object, distance to closest object, and errors.
 
-blue
-
-app
-
-The LCD screen displays the song title, progress (via a progress bar with time stamps), and status (playing/stopped).
-
-lcd
-
-The external 5V power supply is necessary due to all of the external components of the design; the mbed wouldn’t be able to supply enough power to everything in the design using its 5V output pin.
-
---------- EXPLAIN DESIGN CHOICES
 
 ## Software Used
 
@@ -127,6 +129,8 @@ enum statetype
 };
 statetype state = start;
 
+
+// Class to read from microphone
 class microphone
 {
 public:
@@ -174,6 +178,7 @@ Mutex mic;
 Mutex serial;
 Mutex d_mutex;
 
+// Generates the ambiance values from the environment over a 10 second period.
 void sampleMics(void const *args)
 {
     while (1)
@@ -185,6 +190,8 @@ void sampleMics(void const *args)
             float mic1_roll = 0.0;
             float mic2_roll = 0.0;
             float mic3_roll = 0.0;
+
+            //Gets rolling values over a 10 second period.
             for (int i = 0; i < 10000; i++)
             {
                 mic1_roll += mic1.read();
@@ -192,6 +199,7 @@ void sampleMics(void const *args)
                 mic3_roll += mic3.read();
             }
 
+            //The average of the values over a 10 second period.
             mic1s = mic1_roll / 10000;
             mic2s = mic2_roll / 10000;
             mic3s = mic3_roll / 10000;
@@ -204,6 +212,7 @@ void sampleMics(void const *args)
     }
 }
 
+// This thread controls manual movement of the motors and robot. It also reads the values from the Bluefruit app.
 void motorThread(void const *args)
 {
     while (1)
@@ -228,6 +237,7 @@ void motorThread(void const *args)
                     case '1': // number button 1
                         if (bhit == '1')
                         {
+                            //Enables manual override mode
                             manual_mode = 1;
                         }
                         else
@@ -238,6 +248,7 @@ void motorThread(void const *args)
                     case '2': // number button 2
                         if (bhit == '1')
                         {
+                            //Turns on sampling mode.
                             manual_mode = 0;
                             lcd.cls();
                             lcd.locate(1, 3);
@@ -274,6 +285,7 @@ void motorThread(void const *args)
                     case '5': // button 5 up arrow
                         if (bhit == '1')
                         {
+                            //Move forward if there is nothing in front in manual mode
                             d_mutex.lock();
                             if (manual_mode == 1 && d > 8)
                             {
@@ -289,6 +301,7 @@ void motorThread(void const *args)
                         }
                         else
                         {
+                            //upon release
                             if (manual_mode == 1)
                             {
                                 m1.speed(0);
@@ -299,6 +312,7 @@ void motorThread(void const *args)
                     case '6': // button 6 down arrow
                         if (bhit == '1')
                         {
+                            // Move backwards in manual mode
                             if (manual_mode == 1)
                             {
                                 m1.speed(0.5);
@@ -307,6 +321,7 @@ void motorThread(void const *args)
                         }
                         else
                         {
+                            //upon release
                             if (manual_mode == 1)
                             {
                                 m1.speed(0);
@@ -317,6 +332,7 @@ void motorThread(void const *args)
                     case '7': // button 7 left arrow
                         if (bhit == '1')
                         {
+                            //rotate to the left in manual mode
                             if (manual_mode == 1)
                             {
                                 m2.speed(-0.45);
@@ -325,6 +341,7 @@ void motorThread(void const *args)
                         }
                         else
                         {
+                            //upon release
                             if (manual_mode == 1)
                             {
                                 m1.speed(0);
@@ -335,6 +352,7 @@ void motorThread(void const *args)
                     case '8': // button 8 right arrow
                         if (bhit == '1')
                         {
+                            //rotate to the right in manual mode
                             if (manual_mode == 1)
                             {
                                 m2.speed(0.45);
@@ -343,6 +361,7 @@ void motorThread(void const *args)
                         }
                         else
                         {
+                            \\upon release
                             if (manual_mode == 1)
                             {
                                 m1.speed(0);
@@ -455,6 +474,10 @@ void sensorThread(void const *args)
                 continue;
             }
 
+            //Angle calculation logic
+            //Depending on the dominant mic, it chooses which side to bias and moves in that direction. 
+            
+            //e.g. If the sound is coming from the right, it will slightly bias to the right.
             if (mic1_val > mic2_val && mic1_val > mic3_val)
             {
                 sg = (mic2_val > mic3_val) ? mic2_val : mic3_val;
@@ -489,6 +512,9 @@ void sensorThread(void const *args)
             lcd.color(GREEN);
             lcd.printf("Target: %.1f", out);
 
+            //Encoder logic -- Degree angle to encoder value calculation
+            //Tuned using trial and error
+            // Calculated by looking at how many encoder ticks make up a 360 degree turn
             sg = abs(850 * out / 360.0);
             printf("target: %.1f", sg);
             printf("\n\n");
@@ -539,6 +565,7 @@ void sensorThread(void const *args)
     }
 }
 
+//Reads the encoder value and it is above a certain threshold then the LCD displays danger and distance value is calculated and placed in a global variable for other threads to access.
 void distanceThread(void const *args)
 {
     while (1)
@@ -589,6 +616,7 @@ void distanceThread(void const *args)
     }
 }
 
+// Starts threads
 int main()
 {
 
@@ -629,3 +657,4 @@ We encountered problems with library compatibility between the various component
 Additionally, to control music playback we had to explicitly modify the wave_player library so that we could exit the loop that played the music when necessary (toggling a flag that returns from the function and adding some cleanup code for safety when a song is skipped), control playback (pause and resume music playing by toggling a flag), and control volume (writing a scaled unsigned short value to the given AnalogOut pin).
 
 -----ADD CONCLUSION
+
